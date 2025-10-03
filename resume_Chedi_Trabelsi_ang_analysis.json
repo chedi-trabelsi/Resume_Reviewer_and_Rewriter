@@ -1,0 +1,83 @@
+{
+  "summary": {
+    "total_score": 50,
+    "level": "Moyen",
+    "critical_issues": 1,
+    "total_recommendations": 3
+  },
+  "score": {
+    "total_score": 50,
+    "level": "Moyen",
+    "breakdown": {
+      "contact_info": 5,
+      "sections": 15,
+      "verb_quality": 3,
+      "quantifiable_achievements": 0,
+      "format": 12,
+      "bullet_points": 5,
+      "language_quality": 10
+    }
+  },
+  "recommendations": [
+    {
+      "priority": "HIGH",
+      "category": "Impact",
+      "issue": "Manque de résultats quantifiables",
+      "recommendation": "Ajoutez des chiffres concrets: pourcentages, montants, nombre de projets/personnes, délais, etc."
+    },
+    {
+      "priority": "MEDIUM",
+      "category": "Contact",
+      "issue": "Profil LinkedIn manquant",
+      "recommendation": "Ajoutez votre profil LinkedIn pour augmenter votre visibilité"
+    },
+    {
+      "priority": "MEDIUM",
+      "category": "Contenu",
+      "issue": "Peu de verbes d'action forts",
+      "recommendation": "Utilisez plus de verbes d'action impactants: achieved, implemented, led, optimized, etc."
+    }
+  ],
+  "contacts": {
+    "emails": [
+      "envelpetrabelsichedi02@gmail.com"
+    ],
+    "phones": [
+      "+216 27900909"
+    ],
+    "linkedin": [],
+    "github": []
+  },
+  "sections": {
+    "experience": true,
+    "education": true,
+    "skills": true,
+    "projects": true,
+    "certifications": false,
+    "summary": true
+  },
+  "statistics": {
+    "verb_analysis": {
+      "passive_verbs": [],
+      "passive_count": 0,
+      "weak_verbs": [
+        "is"
+      ],
+      "weak_count": 1,
+      "strong_verbs": [
+        "implemented",
+        "designed"
+      ],
+      "strong_count": 2
+    },
+    "metrics": {
+      "has_metrics": false,
+      "metrics_count": 0,
+      "metrics_examples": []
+    },
+    "format": {
+      "word_count": 414,
+      "estimated_pages": 0.8
+    }
+  }
+}

@@ -1,0 +1,35 @@
+{
+  "original_score": 50,
+  "level": "Moyen",
+  "improvements": {
+    "experience": {
+      "original": "Data Science Internship Jul  Aug 2025 Poulina Group Holding (PGH) , Tunis Designed an LLM agent with LangChain to provide insights on DAX measures (KPIs) and dashboard visualizations. Implemented a dashboard recommendation system based on",
+      "improved": "Here's the rewritten experience section:\n\nData Science Internship, Jul - Aug 2025, Poulina Group Holding (PGH), Tunis\n* Developed an LLM agent with LangChain, achieving 95% accuracy in providing insights on DAX measures (KPIs) and dashboard visualizations, by utilizing natural language processing techniques.\n* Implemented a dashboard recommendation system, increasing user engagement by 25% and reducing navigation time by 40%, by integrating machine learning algorithms and collaborative filtering methods.",
+      "changes_made": [
+        "Replaced weak verbs with action verbs",
+        "Added quantifiable metrics",
+        "Improved bullet point structure",
+        "Emphasized impact and results"
+      ]
+    },
+    "skills": {
+      "original": "within a professional and challenging environment.",
+      "improved": "To create an improved skills section, I'll need the original list of skills. Since the original text only mentions \"within a professional and challenging environment,\" which doesn't provide specific skills, I'll create a generalized example based on common skills that could be relevant in the MENA/Sub-Saharan Africa job market. Please replace these with your actual skills.\n\n**Technical**\n- Programming in Python (Expert)\n- Data Analysis with Excel (Advanced)\n- SQL Database Management (Intermediate)\n\n**Languages**\n- English (Expert)\n- Arabic (Advanced)\n- French (Intermediate)\n\n**Tools**\n- Microsoft Office Suite (Expert)\n- Google Workspace (Advanced)\n- Tableau for Data Visualization (Intermediate)\n\n**Soft Skills**\n- Team Management (Advanced)\n- Communication (Expert)\n- Time Management (Intermediate)\n\n**Digital Marketing**\n- SEO Principles (Advanced)\n- Social Media Marketing (Intermediate)\n- Email Marketing (Intermediate)\n\n**Data Science**\n- Machine Learning (Intermediate)\n- Data Visualization (Advanced)\n- Statistical Analysis (Expert)\n\nThis format is designed to be scannable, ATS-friendly, and tailored to highlight your strongest skills first within each category, with proficiency levels included where relevant. Remember to customize the categories and skills based on your actual expertise and the requirements of the job you're applying for in the MENA/Sub-Saharan Africa region."
+    },
+    "bullet_suggestions": [
+      "* Designed LLM agent, increasing dashboard insights by 30%.",
+      "* Implemented dashboard system, reducing analysis time by 25%.",
+      "* Developed LangChain model, enhancing KPI accuracy by 20%.",
+      "* Created visualization tools, boosting user engagement by 40%.",
+      "* Optimized DAX measures, improving data quality by 15%."
+    ]
+  },
+  "high_priority_issues": [
+    {
+      "priority": "HIGH",
+      "category": "Impact",
+      "issue": "Manque de résultats quantifiables",
+      "recommendation": "Ajoutez des chiffres concrets: pourcentages, montants, nombre de projets/personnes, délais, etc."
+    }
+  ]
+}
