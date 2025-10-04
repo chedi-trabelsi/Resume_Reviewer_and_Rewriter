@@ -101,45 +101,58 @@ class ContactExtractor:
 # 3. DÉTECTION DE SECTIONS
 # ============================================
 
+import re
+from typing import Dict
+
 class SectionDetector:
     """Détecte et extrait les sections principales du CV"""
     
     SECTION_PATTERNS = {
         'experience': [
-            r'(?:professional\s+)?(?:work\s+)?experience',
-            r'employment\s+history',
-            r'work\s+history',
-            r'career\s+history',
-            r'expérience\s+professionnelle'
+            r'^(?:professional\s+)?(?:work\s+)?experience',
+            r'^employment\s+history',
+            r'^work\s+history',
+            r'^career\s+history',
+            r'^expérience\s+professionnelle'
         ],
         'education': [
-            r'education(?:al\s+background)?',
-            r'academic\s+(?:background|qualifications)',
-            r'qualifications',
-            r'formation'
+            r'^education(?:al\s+background)?',
+            r'^academic\s+(?:background|qualifications)',
+            r'^qualifications',
+            r'^formation'
         ],
         'skills': [
-            r'(?:technical\s+)?skills',
-            r'competenc(?:ies|es)',
-            r'expertise',
-            r'compétences'
+            r'^(?:technical\s+)?skills',
+            r'^competenc(?:ies|es)',
+            r'^expertise',
+            r'^compétences'
         ],
         'projects': [
-            r'projects?',
-            r'portfolio',
-            r'projets'
+            r'^academic\s+projects?',
+            r'^projects?',
+            r'^portfolio',
+            r'^projets'
         ],
         'certifications': [
-            r'certifications?',
-            r'licenses?',
-            r'credentials'
+            r'^certifications?',
+            r'^licenses?',
+            r'^credentials'
         ],
         'summary': [
-            r'(?:professional\s+)?summary',
-            r'profile',
-            r'objective',
-            r'about\s+me',
-            r'résumé'
+            r'^(?:professional\s+)?summary',
+            r'^profile',
+            r'^objective',
+            r'^about\s+me',
+            r'^résumé'
+        ],
+        'associative': [
+            r'^associative\s+experience',
+            r'^volunteer\s+experience',
+            r'^activities'
+        ],
+        'languages': [
+            r'^languages?',
+            r'^langues?'
         ]
     }
     
@@ -148,12 +161,7 @@ class SectionDetector:
         """Vérifie la présence de chaque section"""
         sections_found = {}
         for section, patterns in SectionDetector.SECTION_PATTERNS.items():
-            found = False
-            for pattern in patterns:
-                if re.search(pattern, text, re.IGNORECASE):
-                    found = True
-                    
-                    break
+            found = any(re.search(pattern, text, re.IGNORECASE | re.MULTILINE) for pattern in patterns)
             sections_found[section] = found
         return sections_found
     
@@ -163,24 +171,24 @@ class SectionDetector:
         patterns = SectionDetector.SECTION_PATTERNS.get(section_name, [])
         
         for pattern in patterns:
-            match = re.search(pattern, text, re.IGNORECASE)
+            match = re.search(pattern, text, re.IGNORECASE | re.MULTILINE)
             if match:
                 start = match.end()
-                
-                # Cherche la prochaine section ou fin du texte
-                next_section = None
                 min_pos = len(text)
-                
+                # Cherche la section suivante
                 for other_section, other_patterns in SectionDetector.SECTION_PATTERNS.items():
                     if other_section != section_name:
                         for other_pattern in other_patterns:
-                            next_match = re.search(other_pattern, text[start:], re.IGNORECASE)
-                            if next_match and next_match.start() < min_pos:
-                                min_pos = next_match.start()
-                print("section trouvé avec le pattern:", text[start:start + min_pos].strip())
-                return text[start:start + min_pos].strip()
-        
+                            next_match = re.search(other_pattern, text[start:], re.IGNORECASE | re.MULTILINE)
+                            if next_match:
+                                pos = start + next_match.start()
+                                if pos < min_pos:
+                                    min_pos = pos
+                section_content = text[start:min_pos].strip()
+                print(f"[DEBUG] Section '{section_name}' trouvée avec pattern '{pattern}':\n{section_content}\n{'-'*50}")
+                return section_content
         return ""
+
 
 
 # ============================================
@@ -281,7 +289,11 @@ class QualityAnalyzer:
     def analyze_bullet_points(self, text: str) -> Dict:
         """Analyse les bullet points"""
         # Détecter les bullet points
-        bullet_patterns = [r'[•\-\*]\s+', r'^\d+\.\s+', r'^[a-z]\)\s+']
+        bullet_patterns = [
+            r'^\s*[•\-\*]\s*.+',   # puces classiques
+            r'^\s*\d+\.\s+.+',     # numérotation 1. 2. 3.
+            r'^\s*[a-z]\)\s+.+',   # a) b) c)
+        ]
         bullets = []
         
         for pattern in bullet_patterns:
@@ -662,15 +674,17 @@ class ResumeAnalyzer:
         contacts = self.contact_extractor.extract_all_contacts(clean_text)
         
         print("📑 Détection des sections...")
-        sections = self.section_detector.detect_sections(clean_text)
+        sections = self.section_detector.detect_sections(raw_text)
         
         # Extraire le contenu de la section expérience pour analyse détaillée
-        experience_text = self.section_detector.extract_section_content(clean_text, 'experience')
-        
+        experience_text = self.section_detector.extract_section_content(raw_text, 'experience')
+        for sec in sections:
+            if sections[sec]:
+                print(self.section_detector.extract_section_content(raw_text, sec))
         print("✍️ Analyse de la qualité du contenu...")
         verb_analysis = self.quality_analyzer.analyze_verbs(experience_text if experience_text else clean_text)
         metrics = self.quality_analyzer.detect_quantifiable_achievements(clean_text)
-        bullets = self.quality_analyzer.analyze_bullet_points(clean_text)
+        bullets = self.quality_analyzer.analyze_bullet_points(raw_text)
         fillers = self.quality_analyzer.check_filler_words(clean_text)
         sentence_structure = self.quality_analyzer.analyze_sentence_structure(clean_text)
         
@@ -802,7 +816,8 @@ class ResumeAnalyzer:
         
         with open(output_path, 'w', encoding='utf-8') as f:
             json.dump(export_data, f, indent=2, ensure_ascii=False)
-        
+        # Déboggage pour afficher analysis_result dans la console 
+        # print(analysis_result)
         print(f"✅ Analyse exportée vers {output_path}")
 
 
@@ -1015,3 +1030,5 @@ for section in sections:
 
 if __name__ == "__main__":
     main()
+
+

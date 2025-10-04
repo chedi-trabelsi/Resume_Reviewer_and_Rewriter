@@ -1,30 +1,24 @@
 {
   "summary": {
-    "total_score": 55,
+    "total_score": 57,
     "level": "Moyen",
-    "critical_issues": 2,
+    "critical_issues": 1,
     "total_recommendations": 3
   },
   "score": {
-    "total_score": 55,
+    "total_score": 57,
     "level": "Moyen",
     "breakdown": {
       "contact_info": 5,
       "sections": 15,
-      "verb_quality": 8,
+      "verb_quality": 5,
       "quantifiable_achievements": 0,
       "format": 12,
-      "bullet_points": 5,
+      "bullet_points": 10,
       "language_quality": 10
     }
   },
   "recommendations": [
-    {
-      "priority": "HIGH",
-      "category": "Structure",
-      "issue": "Section skills manquante",
-      "recommendation": "Ajoutez une section claire pour skills"
-    },
     {
       "priority": "HIGH",
       "category": "Impact",
@@ -36,6 +30,12 @@
       "category": "Contact",
       "issue": "Profil LinkedIn manquant",
       "recommendation": "Ajoutez votre profil LinkedIn pour augmenter votre visibilité"
+    },
+    {
+      "priority": "MEDIUM",
+      "category": "Contenu",
+      "issue": "Peu de verbes d'action forts",
+      "recommendation": "Utilisez plus de verbes d'action impactants: achieved, implemented, led, optimized, etc."
     }
   ],
   "contacts": {
@@ -51,7 +51,7 @@
   "sections": {
     "experience": true,
     "education": true,
-    "skills": false,
+    "skills": true,
     "projects": true,
     "certifications": false,
     "summary": true,
@@ -63,21 +63,18 @@
       "passive_verbs": [],
       "passive_count": 0,
       "weak_verbs": [
-        "participated",
-        "is",
         "are",
-        "be"
+        "participated",
+        "is"
       ],
-      "weak_count": 4,
+      "weak_count": 3,
       "strong_verbs": [
-        "optimized",
-        "built",
-        "designed",
         "implemented",
-        "led",
-        "developed"
+        "developed",
+        "designed",
+        "built"
       ],
-      "strong_count": 6
+      "strong_count": 4
     },
     "metrics": {
       "has_metrics": false,
@@ -85,7 +82,7 @@
       "metrics_examples": []
     },
     "format": {
-      "word_count": 414,
+      "word_count": 404,
       "estimated_pages": 0.8
     }
   }
