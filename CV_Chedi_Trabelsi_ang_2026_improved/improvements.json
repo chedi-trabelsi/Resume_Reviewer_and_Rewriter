@@ -1,0 +1,13 @@
+{
+  "original_score": 59,
+  "level": "Moyen",
+  "improvements": {},
+  "high_priority_issues": [
+    {
+      "priority": "HIGH",
+      "category": "Impact",
+      "issue": "Manque de résultats quantifiables",
+      "recommendation": "Ajoutez des chiffres concrets: pourcentages, montants, nombre de projets/personnes, délais, etc."
+    }
+  ]
+}

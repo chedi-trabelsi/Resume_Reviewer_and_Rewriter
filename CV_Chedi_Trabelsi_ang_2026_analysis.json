@@ -1,0 +1,86 @@
+{
+  "summary": {
+    "total_score": 62,
+    "level": "Bon",
+    "critical_issues": 1,
+    "total_recommendations": 2
+  },
+  "score": {
+    "total_score": 62,
+    "level": "Bon",
+    "breakdown": {
+      "contact_info": 10,
+      "sections": 15,
+      "verb_quality": 5,
+      "quantifiable_achievements": 0,
+      "format": 12,
+      "bullet_points": 10,
+      "language_quality": 10
+    }
+  },
+  "recommendations": [
+    {
+      "priority": "HIGH",
+      "category": "Impact",
+      "issue": "Manque de résultats quantifiables",
+      "recommendation": "Ajoutez des chiffres concrets: pourcentages, montants, nombre de projets/personnes, délais, etc."
+    },
+    {
+      "priority": "MEDIUM",
+      "category": "Contenu",
+      "issue": "Peu de verbes d'action forts",
+      "recommendation": "Utilisez plus de verbes d'action impactants: achieved, implemented, led, optimized, etc."
+    }
+  ],
+  "contacts": {
+    "emails": [
+      "envelpetrabelsichedi02@gmail.com"
+    ],
+    "phones": [
+      "+216 27900909"
+    ],
+    "location": "Sfax, Tunisia",
+    "linkedin": [
+      "https://www.linkedin.com/in/cheditrabelsi"
+    ],
+    "github": []
+  },
+  "sections": {
+    "experience": true,
+    "education": true,
+    "skills": true,
+    "projects": true,
+    "certifications": false,
+    "summary": true,
+    "associative": true,
+    "languages": true
+  },
+  "statistics": {
+    "verb_analysis": {
+      "passive_verbs": [],
+      "passive_count": 0,
+      "weak_verbs": [
+        "is",
+        "are",
+        "participated"
+      ],
+      "weak_count": 3,
+      "strong_verbs": [
+        "built",
+        "designed",
+        "implemented",
+        "developed"
+      ],
+      "strong_count": 4
+    },
+    "metrics": {
+      "has_metrics": false,
+      "metrics_count": 0,
+      "metrics_examples": []
+    },
+    "format": {
+      "word_count": 404,
+      "estimated_pages": 0.8
+    }
+  }
+}

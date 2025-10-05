@@ -9,6 +9,7 @@ import spacy
 from collections import Counter
 from datetime import datetime
 import PyPDF2
+import fitz
 from typing import Dict, List, Tuple
 import json
 
@@ -79,6 +80,20 @@ class ContactExtractor:
         """Extrait les profils LinkedIn"""
         pattern = r'(?:https?://)?(?:www\.)?linkedin\.com/in/[\w\-]+'
         return re.findall(pattern, text, re.IGNORECASE)
+    @staticmethod
+    def extract_linkedin_from_pdf(pdf_path: str) -> List[str]:
+        """Extrait les liens LinkedIn intégrés (même cachés derrière du texte)"""
+        links = []
+        try:
+            doc = fitz.open(pdf_path)
+            for page in doc:
+                for link in page.get_links():
+                    if "uri" in link and "linkedin.com/in/" in link["uri"].lower():
+                        links.append(link["uri"])
+            doc.close()
+        except Exception as e:
+            print(f"[Erreur extraction PDF] {e}")
+        return list(set(links))
     
     @staticmethod
     def extract_github(text: str) -> List[str]:
@@ -87,13 +102,16 @@ class ContactExtractor:
         return re.findall(pattern, text, re.IGNORECASE)
     
     @staticmethod
-    def extract_all_contacts(text: str) -> Dict:
+    def extract_all_contacts(text: str,pdf_path) -> Dict:
         """Extrait toutes les informations de contact"""
+        linkedin_links = ContactExtractor.extract_linkedin(text)
+        if not linkedin_links and pdf_path:
+            linkedin_links = ContactExtractor.extract_linkedin_from_pdf(pdf_path)
         return {
             'emails': ContactExtractor.extract_email(text),
             'phones': ContactExtractor.extract_phone(text),
             'location': ContactExtractor.extract_location(text),
-            'linkedin': ContactExtractor.extract_linkedin(text),
+            'linkedin': linkedin_links,
             'github': ContactExtractor.extract_github(text)
         }
 
@@ -779,7 +797,7 @@ class ResumeAnalyzer:
         clean_text = self.pdf_extractor.clean_text(raw_text)
         
         print("📧 Extraction des informations de contact...")
-        contacts = self.contact_extractor.extract_all_contacts(clean_text)
+        contacts = self.contact_extractor.extract_all_contacts(clean_text,pdf_path)
         
         print("📑 Détection des sections...")
         sections = self.section_detector.detect_sections(raw_text)
