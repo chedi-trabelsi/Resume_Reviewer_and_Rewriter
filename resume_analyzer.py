@@ -92,9 +92,115 @@ class ContactExtractor:
         return {
             'emails': ContactExtractor.extract_email(text),
             'phones': ContactExtractor.extract_phone(text),
+            'location': ContactExtractor.extract_location(text),
             'linkedin': ContactExtractor.extract_linkedin(text),
             'github': ContactExtractor.extract_github(text)
         }
+
+    @staticmethod
+    def extract_location(text: str) :
+        """
+        Extrait la localisation (ville, pays) du CV
+        
+        Returns:
+            Dict avec 'raw_locations', 'cities', 'countries'
+        """
+        import re
+        
+        # Liste de pays communs (MENA + Sub-Saharan Africa + autres)
+        COUNTRIES = {
+            # MENA
+            'tunisia', 'tunisie', 'morocco', 'maroc', 'algeria', 'algérie', 'egypt', 'égypte',
+            'libya', 'libye', 'mauritania', 'mauritanie', 'lebanon', 'liban', 'jordan', 'jordanie',
+            'syria', 'syrie', 'iraq', 'irak', 'saudi arabia', 'arabie saoudite', 'uae', 'emirates',
+            'kuwait', 'koweït', 'qatar', 'oman', 'bahrain', 'bahrein', 'yemen', 'yémen',
+            'palestine', 'israel', 'israël',
+            
+            # Sub-Saharan Africa
+            'nigeria', 'nigéria', 'ethiopia', 'éthiopie', 'kenya', 'ghana', 'tanzania', 'tanzanie',
+            'uganda', 'ouganda', 'south africa', 'afrique du sud', 'senegal', 'sénégal',
+            'ivory coast', 'côte d\'ivoire', 'cameroon', 'cameroun', 'madagascar', 'mali',
+            'burkina faso', 'niger', 'rwanda', 'somalia', 'somalie', 'zimbabwe', 'zambia', 'zambie',
+            'mozambique', 'botswana', 'namibia', 'namibie', 'gabon', 'angola', 'congo',
+            'democratic republic of congo', 'rdc', 'benin', 'bénin', 'togo', 'chad', 'tchad',
+            
+            # Autres pays fréquents
+            'france', 'canada', 'usa', 'united states', 'états-unis', 'uk', 'united kingdom',
+            'royaume-uni', 'germany', 'allemagne', 'spain', 'espagne', 'italy', 'italie',
+            'belgium', 'belgique', 'switzerland', 'suisse', 'netherlands', 'pays-bas'
+        }
+        
+        # Villes majeures MENA/Africa (exemples, à étendre)
+        MAJOR_CITIES = {
+            # Tunisia
+            'tunis', 'sfax', 'sousse', 'bizerte', 'kairouan', 'gabès', 'ariana',
+            # Morocco
+            'casablanca', 'rabat', 'fès', 'marrakech', 'agadir', 'tanger', 'meknès',
+            # Algeria
+            'algiers', 'alger', 'oran', 'constantine', 'annaba', 'blida',
+            # Egypt
+            'cairo', 'le caire', 'alexandria', 'alexandrie', 'giza', 'shubra el-kheima',
+            # Nigeria
+            'lagos', 'abuja', 'kano', 'ibadan', 'port harcourt',
+            # Kenya
+            'nairobi', 'mombasa', 'kisumu', 'nakuru',
+            # South Africa
+            'johannesburg', 'cape town', 'le cap', 'durban', 'pretoria',
+            # Ghana
+            'accra', 'kumasi', 'tamale', 'takoradi',
+            # Senegal
+            'dakar', 'touba', 'thiès', 'saint-louis',
+            # Cameroon
+            'yaoundé', 'douala', 'garoua', 'bamenda',
+            # Ethiopia
+            'addis ababa', 'dire dawa', 'mekelle',
+            # Tanzania
+            'dar es salaam', 'dodoma', 'mwanza', 'arusha',
+            # Uganda
+            'kampala', 'gulu', 'lira', 'mbarara'
+        }
+        
+        locations_found = []
+        cities_found = []
+        countries_found = []
+
+        # Pattern 1: Format "Ville, Pays" ou "Ville - Pays"
+        pattern1 = r'([A-Z][a-zàâäéèêëïîôùûü\s\-\'\.]+)[,\-]\s*([A-Z][a-zàâäéèêëïîôùûü\s]+)'
+        matches1 = re.findall(pattern1, text)
+
+        for city, country in matches1:
+            city = city.strip()
+            country = country.strip()
+            if country.lower() in COUNTRIES:
+                locations_found.append(f"{city}, {country}")
+                cities_found.append(city)
+                countries_found.append(country)
+
+        # Pattern 2: Ville seule
+        for city in MAJOR_CITIES:
+            if re.search(r'\b' + re.escape(city) + r'\b', text, re.IGNORECASE):
+                city_title = city.title()
+                if city_title not in cities_found:
+                    locations_found.append(city_title)
+                    cities_found.append(city_title)
+
+        # Pattern 3: Pays seul
+        for country in COUNTRIES:
+            if re.search(r'\b' + re.escape(country) + r'\b', text, re.IGNORECASE):
+                country_title = country.title()
+                if country_title not in countries_found:
+                    locations_found.append(country_title)
+                    countries_found.append(country_title)
+
+        # ✅ Sécurisation : toujours renvoyer une chaîne
+        if isinstance(locations_found, str):
+            # Si jamais c'est une string par erreur, on la retourne telle quelle
+            return locations_found.strip()
+        elif locations_found:
+            # Sinon on prend le premier élément de la liste
+            return locations_found[0].strip()
+        else:
+            return ""
 
 
 # ============================================
@@ -455,6 +561,8 @@ class ResumeScorer:
             contact_score += 3
         if contacts.get('github'):
             contact_score += 2
+        if contacts.get('location'):
+            contact_score+=2
         breakdown['contact_info'] = contact_score
         score += contact_score
         
@@ -768,6 +876,7 @@ class ResumeAnalyzer:
         contacts = analysis['contacts']
         report.append(f"  • Emails: {len(contacts['emails'])} trouvé(s)")
         report.append(f"  • Téléphones: {len(contacts['phones'])} trouvé(s)")
+        report.append(f"  • Localisation: {contacts['location'] if contacts['location'] else 'Non trouvée'}")
         report.append(f"  • LinkedIn: {'Oui' if contacts['linkedin'] else 'Non'}")
         report.append(f"  • GitHub: {'Oui' if contacts['github'] else 'Non'}")
         report.append("")

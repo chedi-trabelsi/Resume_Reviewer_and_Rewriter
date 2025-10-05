@@ -1,5 +1,0 @@
-Here's the rewritten experience section:
-
-Data Science Internship, Jul - Aug 2025, Poulina Group Holding (PGH), Tunis
-* Developed an LLM agent with LangChain, achieving 95% accuracy in providing insights on DAX measures (KPIs) and dashboard visualizations, by utilizing natural language processing techniques.
-* Implemented a dashboard recommendation system, increasing user engagement by 25% and reducing navigation time by 40%, by integrating machine learning algorithms and collaborative filtering methods.
