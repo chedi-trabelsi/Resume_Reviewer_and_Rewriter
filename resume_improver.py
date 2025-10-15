@@ -24,7 +24,7 @@ class ResumeImprover:
         """
         self.analyzer_api = ResumeAnalyzerAPI()
         self.groq_client = Groq(api_key=groq_api_key)
-        self.model = "llama-3.3-70b-versatile"  # Modèle gratuit et performant
+        self.model = "llama-3.3-70b-versatile"  
     
     def analyze_and_improve(self, pdf_path: str, language: str = "en") -> Dict:
         """

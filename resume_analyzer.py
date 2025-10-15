@@ -10,6 +10,7 @@ from collections import Counter
 from datetime import datetime
 import PyPDF2
 import fitz
+import pdfplumber
 from typing import Dict, List, Tuple
 import json
 
@@ -233,7 +234,7 @@ class SectionDetector:
     
     SECTION_PATTERNS = {
         'experience': [
-            r'^(?:professional\s+)?(?:work\s+)?experience',
+            r'^(?:professional\s+)?(?:work\s+)?(?:internship\s+)?experience',
             r'^employment\s+history',
             r'^work\s+history',
             r'^career\s+history',
@@ -253,12 +254,12 @@ class SectionDetector:
         ],
         'projects': [
             r'^academic\s+projects?',
-            r'^projects?',
+            r'^(?:key\s+)?projects?',
             r'^portfolio',
             r'^projets'
         ],
         'certifications': [
-            r'^certifications?',
+            r'^(?:professional\s+)?certifications?',
             r'^licenses?',
             r'^credentials'
         ],
@@ -271,6 +272,7 @@ class SectionDetector:
         ],
         'associative': [
             r'^associative\s+experience',
+            r'^associative\s+life',
             r'^volunteer\s+experience',
             r'^activities'
         ],
@@ -344,7 +346,9 @@ class QualityAnalyzer:
         'generated', 'implemented', 'improved', 'increased', 'initiated',
         'launched', 'led', 'managed', 'optimized', 'orchestrated',
         'pioneered', 'reduced', 'resolved', 'spearheaded', 'streamlined',
-        'transformed', 'built', 'created', 'drove', 'enhanced'
+        'transformed', 'built', 'created', 'drove', 'enhanced','used',
+        'influenced', 'negotiated', 'secured', 'shaped', 'won',
+        'conducted','participated'
     }
     
     FILLER_WORDS = {
@@ -374,8 +378,11 @@ class QualityAnalyzer:
         # Détecter les verbes d'action forts
         strong_verbs_found = []
         for verb in self.STRONG_ACTION_VERBS:
-            if verb in text.lower():
+            # Autorise un caractère non alphanumérique avant le mot
+            pattern = r'(?:^|[^a-zA-Z0-9])' + re.escape(verb) + r'\b'
+            if re.search(pattern, text, re.IGNORECASE):
                 strong_verbs_found.append(verb)
+
         
         return {
             'passive_verbs': passive_verbs,
@@ -389,15 +396,16 @@ class QualityAnalyzer:
     def detect_quantifiable_achievements(self, text: str) -> Dict:
         """Détecte la présence de réalisations quantifiables"""
         metrics_patterns = [
-            r'\d+%',  # Pourcentages
-            r'\$\d+[KMB]?',  # Montants
-            r'\d+\+?\s*(?:million|thousand|billion|users|customers|clients)',
-            r'(?:increased|decreased|improved|reduced|grew|saved)\s+(?:by\s+)?\d+',
-            r'\d+x',  # Multiplicateurs
-            r'top\s+\d+',
-            r'#\d+',
-            r'\d+\s+(?:people|members|engineers|developers|employees)'
-        ]
+        r'\d+(\.\d+)?%',  # Pourcentages
+        r'\$\d+[KMB]?',  # Montants en dollars
+        r'\d+\+?\s*(?:million|thousand|billion|users|customers|clients)',  # Grands nombres
+        # Verbes suivis éventuellement de mots et du chiffre
+        r'\b(?:increased|decreased|improved|reduced|grew|saved|reducing|boosted|cut)\b(?:\s+\w+){0,5}\s+by\s+\d+(\.\d+)?%?',
+        r'\d+x',  # Multiplicateurs
+        r'top\s+\d+',
+        r'#\d+',
+        r'\d+\s+(?:people|members|engineers|developers|employees)'
+    ]
         
         metrics_found = []
         for pattern in metrics_patterns:
@@ -568,30 +576,30 @@ class ResumeScorer:
         score = 0
         breakdown = {}
         
-        # 1. Contact Information (10 points)
+        # 1. Contact Information (20 points)
         contacts = analysis_results.get('contacts', {})
         contact_score = 0
         if contacts.get('emails'):
-            contact_score += 3
+            contact_score += 5
         if contacts.get('phones'):
-            contact_score += 2
+            contact_score += 5
         if contacts.get('linkedin'):
             contact_score += 3
         if contacts.get('github'):
             contact_score += 2
         if contacts.get('location'):
-            contact_score+=2
+            contact_score+=5
         breakdown['contact_info'] = contact_score
         score += contact_score
         
-        # 2. Sections présentes (15 points)
+        # 2. Sections présentes (20 points)
         sections = analysis_results.get('sections', {})
         section_score = sum(3 for present in sections.values() if present)
-        section_score = min(section_score, 15)
+        section_score = min(section_score, 20)
         breakdown['sections'] = section_score
         score += section_score
         
-        # 3. Qualité des verbes (20 points)
+        # 3. Qualité des verbes (15 points)
         verbs = analysis_results.get('verb_analysis', {})
         verb_score = 0
         # Pénalité pour verbes passifs et faibles
@@ -603,10 +611,10 @@ class ResumeScorer:
         breakdown['verb_quality'] = verb_score
         score += verb_score
         
-        # 4. Réalisations quantifiables (20 points)
+        # 4. Réalisations quantifiables (15 points)
         metrics = analysis_results.get('metrics', {})
         if metrics.get('has_metrics'):
-            metrics_score = min(metrics.get('metrics_count', 0) * 4, 20)
+            metrics_score = min(metrics.get('metrics_count', 0) * 3, 15)
         else:
             metrics_score = 0
         breakdown['quantifiable_achievements'] = metrics_score
@@ -795,6 +803,7 @@ class ResumeAnalyzer:
         print("🔍 Extraction du texte du PDF...")
         raw_text = self.pdf_extractor.extract_text_from_pdf(pdf_path)
         clean_text = self.pdf_extractor.clean_text(raw_text)
+        print(raw_text)
         
         print("📧 Extraction des informations de contact...")
         contacts = self.contact_extractor.extract_all_contacts(clean_text,pdf_path)
@@ -848,7 +857,13 @@ class ResumeAnalyzer:
                 'total_score': score['total_score'],
                 'level': score['level'],
                 'critical_issues': len([r for r in recommendations if r['priority'] == 'HIGH']),
-                'total_recommendations': len(recommendations)
+                'total_recommendations': len(recommendations),
+                'strong_verbs': verb_analysis['strong_verbs'],
+                'metrics': metrics['metrics_examples'],
+                'bullets': bullets['bullet_count'],
+                'filler_words': fillers['filler_words'],
+                'weak_verbs': verb_analysis['weak_verbs'],
+                'passive_verbs': verb_analysis['passive_verbs']
             }
         }
     
