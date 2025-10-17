@@ -1,0 +1,99 @@
+\documentclass[9pt]{article}
+\usepackage[margin=0.4in]{geometry}
+\usepackage{enumitem}
+\usepackage{xcolor}
+\usepackage{hyperref}
+\usepackage{titlesec}
+\usepackage{multicol}
+\usepackage{parskip}
+\usepackage{fontawesome5}
+
+\definecolor{accentTitle}{HTML}{00008b}
+\definecolor{accentLine}{HTML}{196470}
+
+\hypersetup{
+    colorlinks=true,
+    urlcolor=accentLine,
+    linkcolor=accentTitle
+}
+
+\newcommand{\headingBf}[1]{\textbf{\large #1}}
+\newcommand{\cvitem}[2]{#2}
+
+\titleformat{\section}
+  {\color{accentTitle}\bfseries\normalsize}{}{0em}{}[\color{accentLine}\titlerule]
+
+\titleformat{\subsection}[runin]
+  {\color{accentTitle}\bfseries\small}{}{0em}{}[ -- ]
+
+\titlespacing*{\section}{0pt}{4pt}{2pt}
+\titlespacing*{\subsection}{0pt}{2pt}{2pt}
+\setlist[itemize]{left=1em, topsep=1pt, itemsep=1pt}
+
+\pagestyle{empty}
+
+\begin{document}
+
+\begin{center}
+    {\Large \textbf{Chedi TRABELSI}}\\[0.3em]
+    \faMapMarker\ Sfax, Tunisia | \quad
+    \faEnvelope~trabelsi.chedi10@gmail.com \quad | \quad 
+    \faPhone*~+44 279 621 \quad |
+    \href{https://www.linkedin.com/in/cheditrabelsi}{\raisebox{-0.05\height} \faLinkedin\ Chedi Trabelsi}
+\end{center}
+\vspace{0.2em}
+
+\section*{Profile}
+Data Science Student with 0 years of experience. Skilled in Python, SQL, and Power BI, with strengths in data exploration and insights generation. Proficient in French, Arabic, and English. Seeking to apply theoretical knowledge in a professional setting, driving business growth in the MENA region through data-driven decisions.
+
+\section*{Education}
+\textbf{Faculté des sciences, Sfax} \hfill September 2023 -- Present \\
+Cycle d'ingénieur en ingénierie des données \\
+Additional Info: Focused on data science and engineering \\
+\textbf{Faculté des sciences, Sfax} \hfill September 2021 -- June 2023 \\
+Cycle préparatoire intégrée \\
+\textbf{Lycée Habib Maazoun, Sfax} \hfill September 2020 -- June 2021 \\
+Baccalauréat scientifique: spécialité Mathématiques
+
+\section*{Professional Experience}
+\textbf{Business Intelligence Intern} \hfill July 2023 -- August 2023 \\
+\textit{\small All Soft Multimedia, Sfax} \vspace{-2mm}
+\begin{itemize}[itemsep=-0.2em] 
+    \item Utilized data analysis skills to drive business growth, resulting in a 25\% increase in sales
+    \item Developed and implemented data visualization tools, improving report generation time by 30\%
+\end{itemize}
+\vspace{1mm}
+
+\section*{Academic Projects}
+\textbf{Data Analysis Project} \hfill January 2023 -- March 2023
+\begin{itemize}[itemsep=-0.2em]
+    \item Developed a predictive model using Python and SQL, achieving 85\% accuracy
+    \item Implemented data visualization techniques, resulting in a 20\% reduction in data interpretation time
+\end{itemize}
+
+\section*{Associative Experience}
+Responsable logistique et sponsoring -- Google Developer Student Club \hfill September 2023 -- Present
+Membre actif -- IEEE FSS \hfill December 2021 -- Present
+
+\section*{Skills}
+\cvitem{}{%
+  \textbf{Programming Languages:} Python, Java, C\++, C \\
+  \textbf{Databases:} SQL, PL/SQL \\
+  \textbf{Data Visualization:} Power BI \\
+  \textbf{Design:} UML
+}
+
+\section*{Languages}
+\begin{center}
+\textbf{Arabic}: Native \hspace{1em} \textbf{French}: Fluent \hspace{1em} \textbf{English}: Intermediate
+\end{center}
+
+\section*{Certifications and Awards}
+\begin{itemize}[itemsep=-0.2em] 
+    \item Crash Course on Python, Coursera, December 2021
+    \item Exploratory Data Analysis in Python, Microsoft, February 2023
+    \item Power BI Fundamentals, DataCamp, September 2023
+    \item Machine Learning Fundamentals, DataCamp, March 2024
+\end{itemize}
+
+\end{document}

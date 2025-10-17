@@ -1,0 +1,37 @@
+{
+  "original_score": 43,
+  "level": "Moyen",
+  "improvements": {
+    "professional_summary": {
+      "generated_summary": "Data Science Student (0 years). Skilled in Python, SQL, and Power BI, with strengths in data exploration and insights generation. Proficient in French, Arabic, and English. Seeking to apply theoretical knowledge in a professional setting, driving business growth in the MENA region through data-driven decisions.",
+      "placement": "Add at the top of your CV, right after contact information"
+    },
+    "bullet_suggestions": [
+      "Here are five bullet points that demonstrate impact based on the experience text:",
+      "* Analyzed data using Python, resulting in 25% improvement in insights generation.",
+      "* Developed SQL databases, increasing data storage capacity by 30% in 2 months.",
+      "* Created Power BI visualizations, enhancing report readability by 40% in 1 week.",
+      "* Applied Java programming skills, reducing project timeline by 20% in 3 months."
+    ]
+  },
+  "high_priority_issues": [
+    {
+      "priority": "HIGH",
+      "category": "Structure",
+      "issue": "Section education manquante",
+      "recommendation": "Ajoutez une section claire pour education"
+    },
+    {
+      "priority": "HIGH",
+      "category": "Structure",
+      "issue": "Section skills manquante",
+      "recommendation": "Ajoutez une section claire pour skills"
+    },
+    {
+      "priority": "HIGH",
+      "category": "Impact",
+      "issue": "Manque de résultats quantifiables",
+      "recommendation": "Ajoutez des chiffres concrets: pourcentages, montants, nombre de projets/personnes, délais, etc."
+    }
+  ]
+}

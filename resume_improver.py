@@ -1,6 +1,6 @@
 """
-Resume Improver - Intégration NLP + Groq LLM
-Système complet: Analyse NLP → Amélioration LLM → CV optimisé
+Resume Improver - Intégration NLP + Groq LLM + LaTeX Generation
+Système complet: Analyse NLP → Amélioration LLM → CV LaTeX optimisé
 """
 
 from groq import Groq
@@ -8,12 +8,57 @@ from resume_analyzer import ResumeAnalyzerAPI
 import json
 from typing import Dict, List
 import time
+import subprocess
+import os
+import tempfile
 
 
 class ResumeImprover:
     """
-    Classe qui combine l'analyse NLP avec l'amélioration par LLM
+    Classe qui combine l'analyse NLP avec l'amélioration par LLM et génération LaTeX
     """
+    
+    # Template LaTeX de base
+    LATEX_TEMPLATE = r"""\documentclass[9pt]{article}
+\usepackage[margin=0.4in]{geometry}
+\usepackage{enumitem}
+\usepackage{xcolor}
+\usepackage{hyperref}
+\usepackage{titlesec}
+\usepackage{multicol}
+\usepackage{parskip}
+\usepackage{fontawesome5}
+
+\definecolor{accentTitle}{HTML}{00008b}
+\definecolor{accentLine}{HTML}{196470}
+
+\hypersetup{
+    colorlinks=true,
+    urlcolor=accentLine,
+    linkcolor=accentTitle
+}
+
+\newcommand{\headingBf}[1]{\textbf{\large #1}}
+\newcommand{\cvitem}[2]{#2}
+
+\titleformat{\section}
+  {\color{accentTitle}\bfseries\normalsize}{}{0em}{}[\color{accentLine}\titlerule]
+
+\titleformat{\subsection}[runin]
+  {\color{accentTitle}\bfseries\small}{}{0em}{}[ -- ]
+
+\titlespacing*{\section}{0pt}{4pt}{2pt}
+\titlespacing*{\subsection}{0pt}{2pt}{2pt}
+\setlist[itemize]{left=1em, topsep=1pt, itemsep=1pt}
+
+\pagestyle{empty}
+
+\begin{document}
+
+%CONTENT_PLACEHOLDER%
+
+\end{document}
+"""
     
     def __init__(self, groq_api_key: str):
         """
@@ -24,11 +69,11 @@ class ResumeImprover:
         """
         self.analyzer_api = ResumeAnalyzerAPI()
         self.groq_client = Groq(api_key=groq_api_key)
-        self.model = "llama-3.3-70b-versatile"  
+        self.model = "llama-3.3-70b-versatile"
     
     def analyze_and_improve(self, pdf_path: str, language: str = "en") -> Dict:
         """
-        Pipeline complet: Analyse → Amélioration → Rapport
+        Pipeline complet: Analyse → Amélioration → Rapport → LaTeX
         
         Args:
             pdf_path: Chemin vers le PDF du CV
@@ -50,7 +95,14 @@ class ResumeImprover:
             language
         )
         
-        print("\n✨ Phase 3: Génération du rapport final...")
+        print("\n📄 Phase 3: Génération du CV LaTeX amélioré...")
+        latex_content = self._generate_latex_resume(
+            analysis_result,
+            improvements,
+            language
+        )
+        
+        print("\n✨ Phase 4: Génération du rapport final...")
         final_report = self._generate_final_report(
             analysis_result, 
             improvements
@@ -59,6 +111,7 @@ class ResumeImprover:
         return {
             'original_analysis': analysis_result,
             'improvements': improvements,
+            'latex_content': latex_content,
             'final_report': final_report
         }
     
@@ -313,6 +366,198 @@ PROVIDE EXACTLY 5 BULLET POINTS:
         
         return bullets[:5]
     
+    def _generate_latex_resume(self, analysis_result: Dict, 
+                               improvements: Dict, language: str) -> str:
+        """
+        Génère un CV complet en LaTeX basé sur le template
+        """
+        analysis = analysis_result['full_analysis']['analysis']
+        
+        # Préparer les informations pour le prompt
+        issues_summary = self._format_issues_for_prompt(analysis_result)
+        original_cv_content = analysis['clean_text'][:3000]  # Limiter la taille
+        
+        lang_instructions = {
+            'en': 'Generate the CV content in English',
+            'fr': 'Génère le contenu du CV en français'
+        }
+        
+        # Extraire les informations de contact
+        contacts = analysis['contacts']
+        name = self._extract_name(analysis['raw_text'])
+        
+        # Créer un exemple concret du format attendu
+        format_example = r"""
+EXAMPLE OF EXACT FORMAT TO FOLLOW:
+
+\begin{center}
+    {\Large \textbf{John DOE}}\\[0.3em]
+    \faMapMarker\ City, Country | \quad
+    \faEnvelope~email@example.com \quad | \quad 
+    \faPhone*~+123 456789 \quad |
+    \href{https://linkedin.com/in/profile}{\raisebox{-0.05\height} \faLinkedin\ Name}
+\end{center}
+\vspace{0.2em}
+
+\section*{Profile}
+Brief professional summary in 2-3 sentences...
+
+\section*{Education}
+\textbf{University Name} \hfill 2021 -- Present \\
+Degree Title \\
+Additional Info \\
+\textbf{High School Name} \hfill 2017 -- 2021 \\
+Diploma Title
+
+\section*{Professional Experience}
+\textbf{Job Title} \hfill Month Year -- Month Year \\
+\textit{\small Company Name, City} \vspace{-2mm}
+\begin{itemize}[itemsep=-0.2em] 
+    \item Achievement with metrics (increased X by Y%)
+    \item Another achievement with impact
+\end{itemize}
+\vspace{1mm}
+
+\section*{Academic Projects}
+\textbf{Project Title} \hfill Month Year -- Month Year
+\begin{itemize}[itemsep=-0.2em]
+    \item Developed X achieving Y% accuracy
+    \item Implemented Z resulting in performance improvement
+\end{itemize}
+
+\section*{Associative Experience}
+Position Title -- Organization Name \hfill Month Year -- Month Year
+
+\section*{Skills}
+\cvitem{}{%
+  \textbf{Category 1:} Skill1, Skill2, Skill3 \\
+  \textbf{Category 2:} Skill4, Skill5 \\
+}
+
+\section*{Languages}
+\begin{center}
+\textbf{Language1}: Level \hspace{1em} \textbf{Language2}: Level
+\end{center}
+
+\section*{Certifications and Awards}
+\begin{itemize}[itemsep=-0.2em] 
+    \item Award or certification name
+    \item Another certification
+\end{itemize}
+"""
+        
+        prompt = f"""
+You are an expert LaTeX CV writer. Generate a CV that matches EXACTLY the reference format below.
+
+REFERENCE FORMAT (FOLLOW THIS EXACTLY):
+{format_example}
+
+ORIGINAL CV CONTENT:
+{original_cv_content}
+
+CONTACT INFORMATION EXTRACTED:
+- Name: {name}
+- Email: {contacts.get('emails', [''])[0] if contacts.get('emails') else 'email@example.com'}
+- Phone: {contacts.get('phones', [''])[0] if contacts.get('phones') else '+000 00000000'}
+- Location: {contacts.get('location', 'City, Country')}
+- LinkedIn: {contacts.get('linkedin', [''])[0] if contacts.get('linkedin') else ''}
+- GitHub: {contacts.get('github', [''])[0] if contacts.get('github') else ''}
+
+DETECTED ISSUES TO FIX:
+{issues_summary}
+
+IMPROVEMENTS GENERATED:
+{self._format_improvements_for_prompt(improvements)}
+
+CRITICAL FORMATTING RULES (MUST FOLLOW):
+1. Header: Use \\begin{{center}} with name, icons, and contact info on ONE centered block
+2. Education: NO itemize lists! Use \\textbf{{University}} \\hfill dates \\\\ Degree \\\\
+3. Professional Experience: 
+   - \\textbf{{Job Title}} \\hfill Month Year -- Month Year \\\\
+   - \\textit{{\\small Company, City}} \\vspace{{-2mm}}
+   - Then \\begin{{itemize}}[itemsep=-0.2em] for achievements
+   - End with \\vspace{{1mm}} between positions
+4. Skills: Use \\cvitem{{}}{{%
+   \\textbf{{Category:}} skills \\\\
+}} NOT itemize lists!
+5. Languages: \\begin{{center}} with \\hspace{{1em}} separators
+6. Dates: ALWAYS use \\hfill to align dates to the right
+7. Apply improvements: strong verbs, add metrics (percentages, numbers)
+8. NO double \\begin{{document}}
+9. Escape special characters: C++ becomes C\\++, & becomes \\&
+
+{lang_instructions[language]}
+
+Generate ONLY the content (no \\documentclass, no preamble, just the body):
+"""
+        
+        print("  🤖 Génération du CV LaTeX avec l'IA...")
+        response = self.groq_client.chat.completions.create(
+            model=self.model,
+            messages=[{"role": "user", "content": prompt}],
+            temperature=0.3,  # Plus bas pour respecter le format
+            max_tokens=4000
+        )
+        
+        latex_content = response.choices[0].message.content.strip()
+        
+        # Nettoyer le contenu (enlever les balises markdown si présentes)
+        latex_content = latex_content.replace('```latex', '').replace('```', '')
+        
+        # Nettoyer les doubles \begin{document} si présents
+        latex_content = latex_content.replace(r'\begin{document}', '').replace(r'\end{document}', '')
+        
+        # Insérer le contenu dans le template
+        full_latex = self.LATEX_TEMPLATE.replace('%CONTENT_PLACEHOLDER%', latex_content)
+        
+        return full_latex
+    
+    def _extract_name(self, text: str) -> str:
+        """
+        Extrait le nom de la personne du CV
+        """
+        # Le nom est généralement dans les premières lignes, en majuscules ou avec des majuscules
+        lines = text.split('\n')[:10]
+        
+        for line in lines:
+            line = line.strip()
+            # Chercher une ligne avec des mots capitalisés (probablement le nom)
+            if line and len(line.split()) <= 4:  # Nom typiquement 2-4 mots
+                words = line.split()
+                if all(word[0].isupper() if word else False for word in words):
+                    return line
+        
+        return "Full Name"
+    
+    def _format_issues_for_prompt(self, analysis_result: Dict) -> str:
+        """
+        Formate les problèmes détectés pour le prompt LLM
+        """
+        issues = []
+        high_priority = analysis_result['issues_to_fix']['high_priority']
+        
+        for issue in high_priority[:5]:
+            issues.append(f"- {issue['issue']}: {issue['recommendation']}")
+        
+        return '\n'.join(issues) if issues else 'No critical issues detected'
+    
+    def _format_improvements_for_prompt(self, improvements: Dict) -> str:
+        """
+        Formate les améliorations pour le prompt LLM
+        """
+        formatted = []
+        
+        if 'professional_summary' in improvements:
+            formatted.append(f"Professional Summary:\n{improvements['professional_summary']['generated_summary']}")
+        
+        if 'experience' in improvements:
+            formatted.append(f"\nImproved Experience Section:\n{improvements['experience']['improved'][:500]}")
+        
+        if 'skills' in improvements:
+            formatted.append(f"\nImproved Skills:\n{improvements['skills']['improved'][:300]}")
+        
+        return '\n'.join(formatted) if formatted else 'No specific improvements'
+    
     def _generate_final_report(self, analysis: Dict, improvements: Dict) -> str:
         """
         Génère un rapport final avec toutes les améliorations
@@ -383,12 +628,65 @@ PROVIDE EXACTLY 5 BULLET POINTS:
         
         return "\n".join(report)
     
+    def compile_latex_to_pdf(self, latex_content: str, output_path: str) -> bool:
+        """
+        Compile le fichier LaTeX en PDF
+        
+        Args:
+            latex_content: Contenu LaTeX complet
+            output_path: Chemin de sortie pour le PDF (sans extension)
+            
+        Returns:
+            True si la compilation réussit, False sinon
+        """
+        # Créer un répertoire temporaire
+        with tempfile.TemporaryDirectory() as temp_dir:
+            tex_file = os.path.join(temp_dir, 'resume.tex')
+            
+            # Écrire le fichier .tex
+            with open(tex_file, 'w', encoding='utf-8') as f:
+                f.write(latex_content)
+            
+            try:
+                print("  🔨 Compilation LaTeX en cours...")
+                # Compiler avec pdflatex
+                result = subprocess.run(
+                    ['pdflatex', '-interaction=nonstopmode', '-output-directory', temp_dir, tex_file],
+                    capture_output=True,
+                    text=True,
+                    timeout=30
+                )
+                
+                # Vérifier si le PDF a été créé
+                pdf_file = os.path.join(temp_dir, 'resume.pdf')
+                if os.path.exists(pdf_file):
+                    # Copier le PDF vers la destination finale
+                    import shutil
+                    final_pdf = f"{output_path}.pdf"
+                    shutil.copy(pdf_file, final_pdf)
+                    print(f"  ✅ PDF généré avec succès: {final_pdf}")
+                    return True
+                else:
+                    print("  ❌ Erreur: PDF non généré")
+                    print(f"  Log LaTeX:\n{result.stdout}")
+                    return False
+                    
+            except subprocess.TimeoutExpired:
+                print("  ❌ Timeout lors de la compilation LaTeX")
+                return False
+            except FileNotFoundError:
+                print("  ❌ pdflatex non trouvé. Installez TeX Live ou MiKTeX")
+                print("     Ubuntu/Debian: sudo apt-get install texlive-full")
+                print("     macOS: brew install mactex")
+                return False
+            except Exception as e:
+                print(f"  ❌ Erreur lors de la compilation: {str(e)}")
+                return False
+    
     def save_improvements(self, result: Dict, output_dir: str = "."):
         """
         Sauvegarde tous les résultats dans des fichiers
         """
-        import os
-        
         # Créer le dossier de sortie
         os.makedirs(output_dir, exist_ok=True)
         
@@ -398,7 +696,21 @@ PROVIDE EXACTLY 5 BULLET POINTS:
             f.write(result['final_report'])
         print(f"✅ Rapport sauvegardé: {report_path}")
         
-        # 2. JSON structuré pour intégration
+        # 2. Fichier LaTeX
+        latex_path = os.path.join(output_dir, "improved_resume.tex")
+        with open(latex_path, 'w', encoding='utf-8') as f:
+            f.write(result['latex_content'])
+        print(f"✅ Fichier LaTeX sauvegardé: {latex_path}")
+        
+        # 3. Compiler en PDF
+        pdf_base_path = os.path.join(output_dir, "improved_resume")
+        pdf_success = self.compile_latex_to_pdf(result['latex_content'], pdf_base_path)
+        
+        if not pdf_success:
+            print("⚠️  Le PDF n'a pas pu être généré automatiquement.")
+            print(f"   Vous pouvez compiler manuellement le fichier: {latex_path}")
+        
+        # 4. JSON structuré pour intégration
         json_path = os.path.join(output_dir, "improvements.json")
         json_data = {
             'original_score': result['original_analysis']['score'],
@@ -410,7 +722,7 @@ PROVIDE EXACTLY 5 BULLET POINTS:
             json.dump(json_data, f, indent=2, ensure_ascii=False)
         print(f"✅ Données JSON sauvegardées: {json_path}")
         
-        # 3. Sections améliorées séparées (pour copier-coller)
+        # 5. Sections améliorées séparées (pour copier-coller)
         if 'experience' in result['improvements']:
             exp_path = os.path.join(output_dir, "improved_experience.txt")
             with open(exp_path, 'w', encoding='utf-8') as f:
@@ -435,8 +747,8 @@ def main():
     import sys
     
     print("=" * 80)
-    print("🚀 UtopiaHire - Resume Improver")
-    print("   Système intelligent d'amélioration de CV (NLP + LLM)")
+    print("🚀 UtopiaHire - Resume Improver with LaTeX Generation")
+    print("   Système intelligent d'amélioration de CV (NLP + LLM + LaTeX)")
     print("=" * 80)
     print("")
     
@@ -450,6 +762,10 @@ def main():
         print("  1. Visitez https://console.groq.com")
         print("  2. Créez un compte gratuit")
         print("  3. Générez une clé API")
+        print("\nDépendances LaTeX:")
+        print("  Ubuntu/Debian: sudo apt-get install texlive-full texlive-fonts-extra")
+        print("  macOS: brew install mactex")
+        print("  Windows: Installez MiKTeX (https://miktex.org)")
         return
     
     pdf_path = sys.argv[1]
@@ -477,69 +793,14 @@ def main():
         
         print(f"\n✨ Traitement terminé avec succès!")
         print(f"📁 Tous les fichiers sont dans: {output_dir}/")
+        print(f"📄 CV amélioré: {output_dir}/improved_resume.pdf")
+        print(f"📝 Fichier LaTeX: {output_dir}/improved_resume.tex")
         
     except Exception as e:
         print(f"\n❌ Erreur: {str(e)}")
         import traceback
         traceback.print_exc()
 
-
-# ============================================
-# UTILISATION DANS VOTRE APPLICATION WEB
-# ============================================
-
-"""
-INTÉGRATION DANS VOTRE APP (Flask/FastAPI):
--------------------------------------------
-
-from flask import Flask, request, jsonify
-from resume_improver import ResumeImprover
-import os
-
-app = Flask(__name__)
-improver = ResumeImprover(os.getenv('GROQ_API_KEY'))
-
-@app.route('/api/improve-resume', methods=['POST'])
-def improve_resume():
-    # Récupérer le fichier uploadé
-    pdf_file = request.files['resume']
-    language = request.form.get('language', 'en')
-    
-    # Sauvegarder temporairement
-    temp_path = f'/tmp/{pdf_file.filename}'
-    pdf_file.save(temp_path)
-    
-    # Analyser et améliorer
-    result = improver.analyze_and_improve(temp_path, language)
-    
-    # Retourner le résultat
-    return jsonify({
-        'success': True,
-        'original_score': result['original_analysis']['score'],
-        'improvements': result['improvements'],
-        'report': result['final_report']
-    })
-
-if __name__ == '__main__':
-    app.run(debug=True)
-
-
-COÛTS (GROQ - GRATUIT):
-----------------------
-- Modèle: llama-3.1-70b-versatile
-- Limite gratuite: 14,400 tokens/minute
-- Pour 1 CV complet: ~3,000-5,000 tokens utilisés
-- Vous pouvez traiter 3-4 CVs par minute GRATUITEMENT
-- Parfait pour le hackathon et MVP!
-
-
-TEMPS DE TRAITEMENT:
--------------------
-- Analyse NLP: 1-2 secondes (local)
-- Amélioration LLM: 5-10 secondes (Groq est très rapide)
-- TOTAL: ~10-15 secondes pour un CV complet
-- Parfait pour une expérience utilisateur fluide!
-"""
 
 if __name__ == "__main__":
     main()
