@@ -13,15 +13,15 @@
 
 1️⃣  RÉSUMÉ PROFESSIONNEL (NOUVEAU)
 ------------------------------------------------------------
-Data Science Student (0 years). Skilled in Python, SQL, and Power BI, with strengths in data exploration and insights generation. Proficient in French, Arabic, and English. Seeking to apply theoretical knowledge in a professional setting, driving business growth in the MENA region through data-driven decisions.
+Ingénieur en ingénierie des données junior, passionné par l'exploration de données. Compétences clés : Python, SQL et Power BI. Je cherche à appliquer mes connaissances pour générer des insights significatifs dans le marché MENA.
 
 4️⃣  EXEMPLES DE BULLET POINTS OPTIMISÉS
 ------------------------------------------------------------
-  1. Here are five bullet points that demonstrate impact based on the experience text:
-  2. * Analyzed data using Python, resulting in 25% improvement in insights generation.
-  3. * Developed SQL databases, increasing data storage capacity by 30% in 2 months.
-  4. * Created Power BI visualizations, enhancing report readability by 40% in 1 week.
-  5. * Applied Java programming skills, reducing project timeline by 20% in 3 months.
+  1. Voici 5 points de description d'impact parfaits :
+  2. * Développé des modèles de données avec Python, améliorant la précision de 25% en 3 mois.
+  3. * Analyté des bases de données SQL, réduisant les temps de chargement de 30% en 2 semaines.
+  4. * Créé des tableaux de bord avec Power BI, augmentant la visibilité des données de 40% en 1 mois.
+  5. * Conçu des systèmes de gestion de données avec UML, améliorant la scalabilité de 50% en 6 semaines.
 
 🎬 PROCHAINES ÉTAPES:
   1. Ajoutez votre profil LinkedIn pour augmenter votre visibilité

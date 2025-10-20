@@ -1,0 +1,124 @@
+\documentclass[9pt]{article}
+\usepackage[margin=0.4in]{geometry}
+\usepackage{enumitem}
+\usepackage{xcolor}
+\usepackage{hyperref}
+\usepackage{titlesec}
+\usepackage{multicol}
+\usepackage{parskip}
+\usepackage{fontawesome5}
+
+\definecolor{accentTitle}{HTML}{00008b}
+\definecolor{accentLine}{HTML}{196470}
+
+\hypersetup{
+    colorlinks=true,
+    urlcolor=accentLine,
+    linkcolor=accentTitle
+}
+
+\newcommand{\headingBf}[1]{\textbf{\large #1}}
+\newcommand{\cvitem}[2]{#2}
+
+\titleformat{\section}
+  {\color{accentTitle}\bfseries\normalsize}{}{0em}{}[\color{accentLine}\titlerule]
+
+\titleformat{\subsection}[runin]
+  {\color{accentTitle}\bfseries\small}{}{0em}{}[ -- ]
+
+\titlespacing*{\section}{0pt}{4pt}{2pt}
+\titlespacing*{\subsection}{0pt}{2pt}{2pt}
+\setlist[itemize]{left=1em, topsep=1pt, itemsep=1pt}
+
+\pagestyle{empty}
+
+\begin{document}
+
+\begin{center}
+    {\Large \textbf{Chedi TRABELSI}}\\[0.3em]
+    \faMapMarker\ Sfax, Tunisia | \quad
+    \faEnvelope~trabelsichedi02@gmail.com \quad | \quad 
+    \faPhone*~+216 27900909 \quad |
+    \href{https://www.linkedin.com/in/cheditrabelsi}{\raisebox{-0.05\height} \faLinkedin\ Chedi Trabelsi}
+\end{center}
+\vspace{0.2em}
+
+\section*{Profile}
+Final-year data engineering student with a strong academic background and a deep interest in data science and analytics. My primary motivation lies in leveraging data-driven approaches to extract insights and drive informed decisions. I am actively seeking an internship opportunity that will allow me to apply and further develop my technical and analytical skills within a professional and challenging environment.
+
+\section*{Education}
+\textbf{Faculty of Sciences of Sfax} \hfill 2021 -- Present \\
+Engineering Degree in Data Engineering \\
+Integrated Preparatory Cycle \\
+\textbf{Habib Maazoun High School} \hfill 2017 -- 2021 \\
+Baccalaureate in Mathematics \\
+High Honors
+
+\section*{Professional Experience}
+\textbf{Data Science Intern} \hfill Jul 2025 -- Aug 2025 \\
+\textit{\small Poulina Group Holding (PGH), Tunis} \vspace{-2mm}
+\begin{itemize}[itemsep=-0.2em] 
+    \item Designed an LLM agent with LangChain to provide insights on DAX measures (KPIs) and dashboard visualizations, resulting in a 25\% increase in data-driven decision making.
+    \item Implemented a dashboard recommendation system based on project requirement documents, reducing development time by 30\%.
+\end{itemize}
+\vspace{1mm}
+
+\textbf{Data Science Intern} \hfill Jun 2024 -- Jul 2024 \\
+\textit{\small Sagemcom Tunisie, Tunis} \vspace{-2mm}
+\begin{itemize}[itemsep=-0.2em] 
+    \item Participated in the design of an intelligent decision support system for software validation, improving validation efficiency by 20\%.
+    \item Built a multi-agent system with LangChain, integrating LLMs to analyze code changes and recommend relevant tests, achieving a 95\% accuracy rate.
+\end{itemize}
+\vspace{1mm}
+
+\textbf{Business Intelligence Intern} \hfill Jun 2023 -- Jul 2023 \\
+\textit{\small All Soft Multimedia, Sfax} \vspace{-2mm}
+\begin{itemize}[itemsep=-0.2em] 
+    \item Developed an interactive dashboard using Power BI for analyzing sales and cash flow in a cafe/restaurant, resulting in a 15\% increase in sales.
+    \item Improved data visualization and reporting, reducing report generation time by 40\%.
+\end{itemize}
+
+\section*{Academic Projects}
+\textbf{Automatic Recognition of Tunisian License Plates} \hfill Oct 2025 -- Dec 2025
+\begin{itemize}[itemsep=-0.2em]
+    \item Developed image segmentation and classification models for license plate detection, achieving a 92\% detection accuracy rate.
+    \item Implemented OCR (Tesseract/Deep Learning) for character recognition, resulting in a 95\% character recognition accuracy rate.
+\end{itemize}
+
+\textbf{LLM Fusion for Biomedical Question Answering} \hfill Feb 2025 -- May 2025
+\begin{itemize}[itemsep=-0.2em]
+    \item Designed a biomedical question-answering system based on Large Language Models (LLMs), achieving a 90\% answer accuracy rate.
+    \item Used MergeKit to merge two models (mistral-ft-optimized-1218 and BioMistral-7B) to create a more performant model, resulting in a 12\% increase in answer accuracy.
+\end{itemize}
+
+\textbf{Advanced Football Data Analysis Application} \hfill Apr 2025
+\begin{itemize}[itemsep=-0.2em]
+    \item Conducted exploratory data analysis to uncover correlations between performance metrics, identifying a 25\% correlation between player ratings and team performance.
+    \item Built machine learning models to detect underrated players and identify similar players based on custom metrics, resulting in a 20\% increase in accurate player identification.
+\end{itemize}
+
+\section*{Associative Experience}
+Human Resources Manager -- Google Developer Student Club \hfill Sep 2024 -- Jun 2025 \\
+Logistics and Sponsorship Manager -- Google Developer Student Club \hfill Sep 2023 -- Jun 2024
+
+\section*{Skills}
+\cvitem{}{%
+  \textbf{Programming Languages:} Python, Java, C\++ \\
+  \textbf{Frameworks \& Libraries:} FastAPI, React, LangChain, Pandas, Scikit-learn, TensorFlow, PyTorch \\
+  \textbf{Big Data \& Databases:} Hadoop, Spark, Hive, Kafka, MySQL, PostgreSQL, SQL Server \\
+  \textbf{Data Science \& IA:} Machine Learning, Deep Learning, NLP, LLMs, Computer Vision \\
+  \textbf{Tools \& DevOps:} Git/GitHub, Docker, Jenkins, Ansible, Kubernetes
+}
+
+\section*{Languages}
+\begin{center}
+\textbf{Arabic}: Native \hspace{1em} \textbf{French}: Fluent \hspace{1em} \textbf{English}: Fluent (C1, TOEIC certified)
+\end{center}
+
+\section*{Certifications and Awards}
+\begin{itemize}[itemsep=-0.2em] 
+    \item TOEIC certification
+    \item High Honors in Baccalaureate in Mathematics
+\end{itemize}
+
+\end{document}

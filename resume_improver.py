@@ -221,7 +221,7 @@ IMPROVED VERSION:
         improved_text = response.choices[0].message.content
         
         return {
-            'original': text[:500],
+            'original': text[:],
             'improved': improved_text,
             'changes_made': [
                 'Replaced weak verbs with action verbs',
@@ -254,7 +254,7 @@ CV EXCERPT:
 EXPERIENCE: {experience_years} years
 
 REQUIREMENTS:
-1. Start with job title/role and years of experience
+1. Start with job title/role and years of experience(if relevant else say he is junior without saying 0 years of experience)
 2. Highlight 2-3 key strengths or achievements
 3. Mention 2-3 core technical/professional skills
 4. End with career goal or value proposition
@@ -297,11 +297,9 @@ ORIGINAL:
 REQUIREMENTS:
 1. Group skills into clear categories (Technical, Languages, Tools, Soft Skills, etc.)
 2. List most relevant/strongest skills first
-3. Add proficiency levels where relevant (Expert, Advanced, Intermediate)
-4. Remove redundant or outdated skills
-5. Use consistent formatting
-6. Keep it scannable and ATS-friendly
-7. Context: MENA/Sub-Saharan Africa job market
+3. Remove redundant or outdated skills
+4. Use consistent formatting
+5. Keep it scannable and ATS-friendly
 
 {lang_instructions[language]}
 

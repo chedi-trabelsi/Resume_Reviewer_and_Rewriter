@@ -3,15 +3,15 @@
   "level": "Moyen",
   "improvements": {
     "professional_summary": {
-      "generated_summary": "Data Science Student (0 years). Skilled in Python, SQL, and Power BI, with strengths in data exploration and insights generation. Proficient in French, Arabic, and English. Seeking to apply theoretical knowledge in a professional setting, driving business growth in the MENA region through data-driven decisions.",
+      "generated_summary": "Ingénieur en ingénierie des données junior, passionné par l'exploration de données. Compétences clés : Python, SQL et Power BI. Je cherche à appliquer mes connaissances pour générer des insights significatifs dans le marché MENA.",
       "placement": "Add at the top of your CV, right after contact information"
     },
     "bullet_suggestions": [
-      "Here are five bullet points that demonstrate impact based on the experience text:",
-      "* Analyzed data using Python, resulting in 25% improvement in insights generation.",
-      "* Developed SQL databases, increasing data storage capacity by 30% in 2 months.",
-      "* Created Power BI visualizations, enhancing report readability by 40% in 1 week.",
-      "* Applied Java programming skills, reducing project timeline by 20% in 3 months."
+      "Voici 5 points de description d'impact parfaits :",
+      "* Développé des modèles de données avec Python, améliorant la précision de 25% en 3 mois.",
+      "* Analyté des bases de données SQL, réduisant les temps de chargement de 30% en 2 semaines.",
+      "* Créé des tableaux de bord avec Power BI, augmentant la visibilité des données de 40% en 1 mois.",
+      "* Conçu des systèmes de gestion de données avec UML, améliorant la scalabilité de 50% en 6 semaines."
     ]
   },
   "high_priority_issues": [

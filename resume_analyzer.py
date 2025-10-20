@@ -687,6 +687,20 @@ class RecommendationEngine:
                 'issue': 'Email manquant',
                 'recommendation': 'Ajoutez une adresse email professionnelle visible en haut du CV'
             })
+        if not contacts.get('phones'):
+            recommendations.append({
+                'priority': 'HIGH',
+                'category': 'Contact',
+                'issue': 'Numéro de téléphone manquant',
+                'recommendation': 'Ajoutez un numéro de téléphone pour faciliter le contact'
+            })
+        if not contacts.get('location'):
+            recommendations.append({
+                'priority': 'MEDIUM',
+                'category': 'Contact',
+                'issue': 'Localisation manquante',
+                'recommendation': 'Indiquez votre ville et pays pour aider les recruteurs à situer votre profil'
+            })
         
         if not contacts.get('linkedin'):
             recommendations.append({
@@ -706,6 +720,15 @@ class RecommendationEngine:
                     'category': 'Structure',
                     'issue': f'Section {section} manquante',
                     'recommendation': f'Ajoutez une section claire pour {section}'
+                })
+        non_critical_sections= ['projects', 'certifications', 'summary', 'associative', 'languages']
+        for section in non_critical_sections:
+            if not sections.get(section):
+                recommendations.append({
+                    'priority': 'MEDIUM',
+                    'category': 'Structure',
+                    'issue': f'Section {section} manquante',
+                    'recommendation': f'Envisagez d\'ajouter une section pour {section} si pertinent'
                 })
         
         # Problèmes de verbes
@@ -803,7 +826,6 @@ class ResumeAnalyzer:
         print("🔍 Extraction du texte du PDF...")
         raw_text = self.pdf_extractor.extract_text_from_pdf(pdf_path)
         clean_text = self.pdf_extractor.clean_text(raw_text)
-        print(raw_text)
         
         print("📧 Extraction des informations de contact...")
         contacts = self.contact_extractor.extract_all_contacts(clean_text,pdf_path)
@@ -1086,89 +1108,6 @@ class ResumeAnalyzerAPI:
         return sections_to_improve
 
 
-# ============================================
-# INSTALLATION ET DÉPENDANCES
-# ============================================
-
-"""
-INSTALLATION:
--------------
-
-1. Installer les dépendances:
-   pip install spacy PyPDF2
-
-2. Télécharger le modèle spaCy:
-   python -m spacy download en_core_web_sm
-
-3. Si vous analysez des CVs en français, installer aussi:
-   python -m spacy download fr_core_news_sm
-
-
-UTILISATION BASIQUE:
--------------------
-
-# Option 1: Ligne de commande
-python resume_analyzer.py mon_cv.pdf
-
-# Option 2: Dans votre code
-from resume_analyzer import ResumeAnalyzerAPI
-
-api = ResumeAnalyzerAPI()
-result = api.analyze("mon_cv.pdf")
-
-print(f"Score: {result['score']}/100")
-print(f"Niveau: {result['level']}")
-
-# Récupérer les sections à améliorer pour le LLM
-sections = api.get_text_to_improve("mon_cv.pdf")
-for section in sections:
-    print(f"Section: {section['section']}")
-    print(f"Problèmes: {section['issues']}")
-
-
-INTÉGRATION AVEC LLM (Groq):
-----------------------------
-
-from groq import Groq
-from resume_analyzer import ResumeAnalyzerAPI
-
-# 1. Analyser le CV
-api = ResumeAnalyzerAPI()
-result = api.analyze("cv.pdf")
-
-# 2. Récupérer les sections problématiques
-sections = api.get_text_to_improve("cv.pdf")
-
-# 3. Utiliser Groq pour améliorer
-client = Groq(api_key="votre_clé_gratuite")
-
-for section in sections:
-    prompt = f'''
-    Améliore cette section de CV:
-    
-    Texte original:
-    {section['text']}
-    
-    Problèmes identifiés:
-    {', '.join(section['issues'])}
-    
-    Verbes faibles à remplacer: {', '.join(section.get('weak_verbs', []))}
-    
-    Consignes:
-    - Utilise des verbes d'action forts au passé
-    - Ajoute des métriques quantifiables si possible
-    - Garde le même sens mais rends plus impactant
-    - Contexte: CV pour l'Afrique Sub-Saharienne / MENA
-    '''
-    
-    response = client.chat.completions.create(
-        model="llama-3.1-70b-versatile",
-        messages=[{"role": "user", "content": prompt}]
-    )
-    
-    improved_text = response.choices[0].message.content
-    print(f"\n✨ Version améliorée:\n{improved_text}")
-"""
 
 if __name__ == "__main__":
     main()
